@@ -10,10 +10,7 @@ export function MainLayout() {
             <Link to="/" className="font-bold">
               React Rsbuild
             </Link>
-            <Link
-              to="/"
-              className="transition-colors hover:text-foreground/80"
-            >
+            <Link to="/" className="transition-colors hover:text-foreground/80">
               Home
             </Link>
             <Link

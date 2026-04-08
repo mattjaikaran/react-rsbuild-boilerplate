@@ -1,10 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute('/about')({
   component: AboutPage,
@@ -13,14 +8,23 @@ export const Route = createFileRoute('/about')({
 function AboutPage() {
   const stack = [
     { name: 'React 19', description: 'UI library' },
-    { name: 'Rsbuild', description: 'Rust-powered build tool (Rspack under the hood)' },
+    {
+      name: 'Rsbuild',
+      description: 'Rust-powered build tool (Rspack under the hood)',
+    },
     { name: 'TypeScript', description: 'Type safety with strict mode' },
     { name: 'TanStack Router', description: 'File-based, type-safe routing' },
     { name: 'TanStack Query', description: 'Server state management' },
     { name: 'Zustand', description: 'Client state management' },
     { name: 'shadcn/ui', description: 'Radix + Tailwind component library' },
-    { name: 'Tailwind CSS', description: 'Utility-first styling with dark mode' },
-    { name: 'React Hook Form + Zod', description: 'Form handling and validation' },
+    {
+      name: 'Tailwind CSS',
+      description: 'Utility-first styling with dark mode',
+    },
+    {
+      name: 'React Hook Form + Zod',
+      description: 'Form handling and validation',
+    },
     { name: 'Axios', description: 'HTTP client with interceptors' },
     { name: 'Vitest', description: 'Unit and component testing' },
     { name: 'Sonner', description: 'Toast notifications' },

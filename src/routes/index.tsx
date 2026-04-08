@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -6,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -43,9 +43,7 @@ function HomePage() {
         <Card>
           <CardHeader>
             <CardTitle>TanStack Router</CardTitle>
-            <CardDescription>
-              Type-safe file-based routing
-            </CardDescription>
+            <CardDescription>Type-safe file-based routing</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
@@ -57,9 +55,7 @@ function HomePage() {
         <Card>
           <CardHeader>
             <CardTitle>shadcn/ui</CardTitle>
-            <CardDescription>
-              Beautiful, accessible components
-            </CardDescription>
+            <CardDescription>Beautiful, accessible components</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">

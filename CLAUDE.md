@@ -4,10 +4,11 @@
 ```bash
 bun run dev          # Dev server (port 3000)
 bun run build        # Production build
-bun run check        # typecheck + lint + test
+bun run check        # Biome lint + format
+bun run check:all    # typecheck + biome + test
 bun run test         # Vitest
-bun run lint:fix     # ESLint auto-fix
-bun run format       # Prettier
+bun run lint:fix     # Biome lint auto-fix
+bun run format       # Biome format
 ```
 
 ## Architecture

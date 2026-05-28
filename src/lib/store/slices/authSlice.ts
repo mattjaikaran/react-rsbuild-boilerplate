@@ -53,9 +53,9 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
         },
       }
 
-      localStorage.setItem('auth_token', mockResponse.tokens.accessToken)
-      localStorage.setItem('refresh_token', mockResponse.tokens.refreshToken)
-      localStorage.setItem('user', JSON.stringify(mockResponse.user))
+      localStorage.setItem('auth_token:v1', mockResponse.tokens.accessToken)
+      localStorage.setItem('refresh_token:v1', mockResponse.tokens.refreshToken)
+      localStorage.setItem('user:v1', JSON.stringify(mockResponse.user))
 
       set({
         user: mockResponse.user,
@@ -92,9 +92,9 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
         },
       }
 
-      localStorage.setItem('auth_token', mockResponse.tokens.accessToken)
-      localStorage.setItem('refresh_token', mockResponse.tokens.refreshToken)
-      localStorage.setItem('user', JSON.stringify(mockResponse.user))
+      localStorage.setItem('auth_token:v1', mockResponse.tokens.accessToken)
+      localStorage.setItem('refresh_token:v1', mockResponse.tokens.refreshToken)
+      localStorage.setItem('user:v1', JSON.stringify(mockResponse.user))
 
       set({
         user: mockResponse.user,
@@ -130,9 +130,9 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
   },
 
   logout: () => {
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('refresh_token')
-    localStorage.removeItem('user')
+    localStorage.removeItem('auth_token:v1')
+    localStorage.removeItem('refresh_token:v1')
+    localStorage.removeItem('user:v1')
 
     set({
       user: null,
@@ -155,8 +155,8 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
         refreshToken: 'new-mock-refresh-token',
       }
 
-      localStorage.setItem('auth_token', mockTokens.accessToken)
-      localStorage.setItem('refresh_token', mockTokens.refreshToken)
+      localStorage.setItem('auth_token:v1', mockTokens.accessToken)
+      localStorage.setItem('refresh_token:v1', mockTokens.refreshToken)
 
       set({
         tokens: mockTokens,
@@ -169,13 +169,13 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
 
   setUser: (user: User) => {
     set({ user })
-    localStorage.setItem('user', JSON.stringify(user))
+    localStorage.setItem('user:v1', JSON.stringify(user))
   },
 
   setTokens: (tokens: AuthTokens) => {
     set({ tokens })
-    localStorage.setItem('auth_token', tokens.accessToken)
-    localStorage.setItem('refresh_token', tokens.refreshToken)
+    localStorage.setItem('auth_token:v1', tokens.accessToken)
+    localStorage.setItem('refresh_token:v1', tokens.refreshToken)
   },
 
   setLoading: (isLoading: boolean) => {
@@ -192,9 +192,9 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
 
   initializeAuth: () => {
     try {
-      const token = localStorage.getItem('auth_token')
-      const refreshToken = localStorage.getItem('refresh_token')
-      const userStr = localStorage.getItem('user')
+      const token = localStorage.getItem('auth_token:v1')
+      const refreshToken = localStorage.getItem('refresh_token:v1')
+      const userStr = localStorage.getItem('user:v1')
 
       if (token && refreshToken && userStr) {
         const user = JSON.parse(userStr)
@@ -206,9 +206,9 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
       }
     } catch (error) {
       console.error('Failed to initialize auth:', error)
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('refresh_token')
-      localStorage.removeItem('user')
+      localStorage.removeItem('auth_token:v1')
+      localStorage.removeItem('refresh_token:v1')
+      localStorage.removeItem('user:v1')
     }
   },
 })

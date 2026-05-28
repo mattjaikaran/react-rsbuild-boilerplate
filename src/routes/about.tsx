@@ -10,7 +10,7 @@ export const Route = createFileRoute('/about')({
   component: AboutPage,
 })
 
-function AboutPage() {
+export function AboutPage() {
   const stack = [
     { name: 'React 19', description: 'UI library' },
     { name: 'Rsbuild', description: 'Rust-powered build tool (Rspack under the hood)' },
@@ -30,7 +30,7 @@ function AboutPage() {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">About This Boilerplate</h1>
       <p className="text-muted-foreground">
-        A production-ready React starter powered by Rsbuild — the Rust-based
+        A production-ready React starter powered by Rsbuild, the Rust-based
         alternative to Vite with consistent dev/prod bundling.
       </p>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">

@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useReducer, useRef } from 'react'
+
+type DebounceState<T> = { debouncedValue: T }
+function debounceReducer<T>(_state: DebounceState<T>, action: { value: T }): DebounceState<T> {
+  return { debouncedValue: action.value }
+}
 
 export const useDebounce = <T>(value: T, delay: number = 500): T => {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+  const [state, dispatch] = useReducer(debounceReducer<T>, { debouncedValue: value })
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedValue(value)
+      dispatch({ value })
     }, delay)
 
     return () => {
@@ -13,7 +18,7 @@ export const useDebounce = <T>(value: T, delay: number = 500): T => {
     }
   }, [value, delay])
 
-  return debouncedValue
+  return state.debouncedValue
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,9 +42,10 @@ export const useDebouncedCallback = <T extends (...args: any[]) => unknown>(
   )
 
   useEffect(() => {
+    const ref = timeoutRef
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
+      if (ref.current) {
+        clearTimeout(ref.current)
       }
     }
   }, [])
@@ -47,25 +53,40 @@ export const useDebouncedCallback = <T extends (...args: any[]) => unknown>(
   return debouncedCallback
 }
 
+type DebounceLoadingState<T> = { debouncedValue: T; isDebouncing: boolean }
+type DebounceLoadingAction<T> =
+  | { type: 'start' }
+  | { type: 'settle'; value: T }
+
+function debounceLoadingReducer<T>(
+  state: DebounceLoadingState<T>,
+  action: DebounceLoadingAction<T>
+): DebounceLoadingState<T> {
+  if (action.type === 'start') return { ...state, isDebouncing: true }
+  return { debouncedValue: action.value, isDebouncing: false }
+}
+
 export const useDebounceWithLoading = <T>(
   value: T,
   delay: number = 500
 ): { debouncedValue: T; isDebouncing: boolean } => {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
-  const [isDebouncing, setIsDebouncing] = useState(false)
+  const [state, dispatch] = useReducer(debounceLoadingReducer<T>, {
+    debouncedValue: value,
+    isDebouncing: false,
+  })
+
+  const valueRef = useRef(value)
+  valueRef.current = value
 
   useEffect(() => {
-    setIsDebouncing(true)
-
+    dispatch({ type: 'start' })
     const timer = setTimeout(() => {
-      setDebouncedValue(value)
-      setIsDebouncing(false)
+      dispatch({ type: 'settle', value: valueRef.current })
     }, delay)
-
     return () => {
       clearTimeout(timer)
     }
   }, [value, delay])
 
-  return { debouncedValue, isDebouncing }
+  return state
 }

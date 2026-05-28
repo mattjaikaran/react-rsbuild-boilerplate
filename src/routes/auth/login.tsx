@@ -10,7 +10,7 @@ export const Route = createFileRoute('/auth/login')({
   component: LoginPage,
 })
 
-function LoginPage() {
+export function LoginPage() {
   const navigate = useNavigate()
 
   return (

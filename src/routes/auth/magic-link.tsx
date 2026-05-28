@@ -10,7 +10,7 @@ export const Route = createFileRoute('/auth/magic-link')({
   component: MagicLinkPage,
 })
 
-function MagicLinkPage() {
+export function MagicLinkPage() {
   const navigate = useNavigate()
 
   return (

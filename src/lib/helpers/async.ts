@@ -49,25 +49,22 @@ export async function parallel<T>(
   }
 
   const results: T[] = []
-  const executing: Promise<void>[] = []
+  const executing = new Map<Promise<void>, true>()
 
   for (let i = 0; i < tasks.length; i++) {
-    const p = tasks[i]!().then((result) => {
+    const p: Promise<void> = tasks[i]!().then((result) => {
       results[i] = result
+      executing.delete(p)
     })
 
-    executing.push(p)
+    executing.set(p, true)
 
-    if (executing.length >= concurrency) {
-      await Promise.race(executing)
-      executing.splice(
-        executing.findIndex((e) => e === p),
-        1,
-      )
+    if (executing.size >= concurrency) {
+      await Promise.race(executing.keys())
     }
   }
 
-  await Promise.all(executing)
+  await Promise.all(executing.keys())
   return results
 }
 

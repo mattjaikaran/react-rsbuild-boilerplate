@@ -1,0 +1,34 @@
+{
+  "ignore": {
+    "overrides": [
+      {
+        "files": ["src/routes/**/*.tsx"],
+        "rules": ["react-doctor/only-export-components"]
+      },
+      {
+        "files": ["src/components/ui/button.tsx"],
+        "rules": ["react-doctor/only-export-components"]
+      },
+      {
+        "files": ["src/lib/helpers/async.ts"],
+        "rules": [
+          "react-doctor/async-await-in-loop"
+        ]
+      },
+      {
+        "files": ["src/lib/helpers/format.ts"],
+        "rules": [
+          "react-doctor/js-hoist-intl"
+        ]
+      },
+      {
+        "files": ["src/routes/settings/index.tsx"],
+        "rules": ["react-doctor/no-giant-component"]
+      }
+    ],
+    "rules": [
+      "deslop/unused-file",
+      "deslop/unused-dev-dependency"
+    ]
+  }
+}

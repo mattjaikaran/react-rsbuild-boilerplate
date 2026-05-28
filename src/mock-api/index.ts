@@ -99,20 +99,20 @@ const generateId = () => Math.random().toString(36).substr(2, 9)
 export const mockApi = {
   auth: {
     login: async (credentials: { email: string; password: string }) => {
-      await delay(800)
       if (
-        credentials.email === 'demo@example.com' &&
-        credentials.password === 'password'
+        credentials.email !== 'demo@example.com' ||
+        credentials.password !== 'password'
       ) {
-        return {
-          user: mockUser,
-          tokens: {
-            accessToken: 'mock-access-token-' + Date.now(),
-            refreshToken: 'mock-refresh-token-' + Date.now(),
-          },
-        }
+        throw new Error('Invalid credentials')
       }
-      throw new Error('Invalid credentials')
+      await delay(800)
+      return {
+        user: mockUser,
+        tokens: {
+          accessToken: 'mock-access-token-' + Date.now(),
+          refreshToken: 'mock-refresh-token-' + Date.now(),
+        },
+      }
     },
 
     register: async (credentials: {

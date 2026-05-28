@@ -5,7 +5,7 @@ export const Route = createFileRoute('/todos/create')({
   component: CreateTodoPage,
 })
 
-function CreateTodoPage() {
+export function CreateTodoPage() {
   const navigate = useNavigate()
 
   const handleSuccess = () => {

@@ -10,7 +10,7 @@ export const Route = createFileRoute('/auth/register')({
   component: RegisterPage,
 })
 
-function RegisterPage() {
+export function RegisterPage() {
   const navigate = useNavigate()
 
   return (

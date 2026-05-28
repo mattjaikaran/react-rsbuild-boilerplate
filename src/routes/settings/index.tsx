@@ -81,6 +81,7 @@ function SettingsPage() {
           <div className="space-y-1 lg:sticky lg:top-24">
             {tabs.map(tab => (
               <button
+                type="button"
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
@@ -90,7 +91,7 @@ function SettingsPage() {
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}
               >
-                <tab.icon className="h-5 w-5" />
+                <tab.icon className="size-5" />
                 {tab.label}
               </button>
             ))}
@@ -154,7 +155,7 @@ function SettingsPage() {
                     />
                   </div>
                   <Button type="submit" className="gap-2">
-                    <Save className="h-4 w-4" />
+                    <Save className="size-4" />
                     Save Changes
                   </Button>
                 </form>
@@ -206,6 +207,7 @@ function SettingsPage() {
                     <button
                       type="button"
                       role="switch"
+                      aria-label={item.label}
                       aria-checked={
                         notifications[item.id as keyof typeof notifications]
                       }
@@ -235,7 +237,7 @@ function SettingsPage() {
                   </div>
                 ))}
                 <Button className="gap-2">
-                  <Save className="h-4 w-4" />
+                  <Save className="size-4" />
                   Save Preferences
                 </Button>
               </CardContent>
@@ -247,7 +249,7 @@ function SettingsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Key className="h-5 w-5" />
+                    <Key className="size-5" />
                     Change Password
                   </CardTitle>
                   <CardDescription>
@@ -299,7 +301,7 @@ function SettingsPage() {
                       />
                     </div>
                     <Button type="submit" className="gap-2">
-                      <Key className="h-4 w-4" />
+                      <Key className="size-4" />
                       Update Password
                     </Button>
                   </form>
@@ -309,7 +311,7 @@ function SettingsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5" />
+                    <Shield className="size-5" />
                     Two-Factor Authentication
                   </CardTitle>
                   <CardDescription>
@@ -335,7 +337,7 @@ function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Palette className="h-5 w-5" />
+                  <Palette className="size-5" />
                   Appearance
                 </CardTitle>
                 <CardDescription>
@@ -351,6 +353,7 @@ function SettingsPage() {
                   <div className="grid grid-cols-3 gap-4">
                     {['light', 'dark', 'system'].map(theme => (
                       <button
+                        type="button"
                         key={theme}
                         className={cn(
                           'flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors',
@@ -378,13 +381,13 @@ function SettingsPage() {
 
                 <div>
                   <Label className="flex items-center gap-2 text-base">
-                    <Globe className="h-4 w-4" />
+                    <Globe className="size-4" />
                     Language
                   </Label>
                   <p className="mb-4 text-sm text-muted-foreground">
                     Select your preferred language.
                   </p>
-                  <select className="w-full rounded-md border bg-background p-2">
+                  <select aria-label="Language" className="w-full rounded-md border bg-background p-2">
                     <option value="en">English</option>
                     <option value="es">Espanol</option>
                     <option value="fr">Francais</option>
@@ -393,7 +396,7 @@ function SettingsPage() {
                 </div>
 
                 <Button className="gap-2">
-                  <Save className="h-4 w-4" />
+                  <Save className="size-4" />
                   Save Preferences
                 </Button>
               </CardContent>

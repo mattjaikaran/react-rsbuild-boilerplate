@@ -1,12 +1,28 @@
+const currencyFormatterCache = new Map<string, Intl.NumberFormat>()
+const numberFormatterCache = new Map<string, Intl.NumberFormat>()
+
+function getCurrencyFormatter(locale: string, currency: string): Intl.NumberFormat {
+  const key = `${locale}:${currency}`
+  if (!currencyFormatterCache.has(key)) {
+    currencyFormatterCache.set(key, new Intl.NumberFormat(locale, { style: 'currency', currency }))
+  }
+  return currencyFormatterCache.get(key)!
+}
+
+function getNumberFormatter(locale: string, options?: Intl.NumberFormatOptions): Intl.NumberFormat {
+  const key = `${locale}:${JSON.stringify(options ?? {})}`
+  if (!numberFormatterCache.has(key)) {
+    numberFormatterCache.set(key, new Intl.NumberFormat(locale, options))
+  }
+  return numberFormatterCache.get(key)!
+}
+
 export function formatCurrency(
   amount: number,
   currency: string = 'USD',
   locale: string = 'en-US',
 ): string {
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency,
-  }).format(amount)
+  return getCurrencyFormatter(locale, currency).format(amount)
 }
 
 export function formatNumber(
@@ -14,7 +30,7 @@ export function formatNumber(
   locale: string = 'en-US',
   options?: Intl.NumberFormatOptions,
 ): string {
-  return new Intl.NumberFormat(locale, options).format(value)
+  return getNumberFormatter(locale, options).format(value)
 }
 
 export function formatPercentage(value: number, decimals: number = 1): string {

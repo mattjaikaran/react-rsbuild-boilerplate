@@ -1,3 +1,4 @@
+import { authApi } from '@/api/auth'
 import type {
   AuthState,
   AuthTokens,
@@ -32,183 +33,85 @@ const initialState: AuthState = {
 
 export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
   ...initialState,
-
-  login: async (credentials: LoginCredentials) => {
+  login: async (credentials) => {
     set({ isLoading: true, error: null })
-
     try {
-      const mockResponse = {
-        user: {
-          id: '1',
-          email: credentials.email,
-          firstName: 'John',
-          lastName: 'Doe',
-          isActive: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        tokens: {
-          accessToken: 'mock-access-token',
-          refreshToken: 'mock-refresh-token',
-        },
-      }
-
-      localStorage.setItem('auth_token:v1', mockResponse.tokens.accessToken)
-      localStorage.setItem('refresh_token:v1', mockResponse.tokens.refreshToken)
-      localStorage.setItem('user:v1', JSON.stringify(mockResponse.user))
-
-      set({
-        user: mockResponse.user,
-        tokens: mockResponse.tokens,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      })
+      const response = await authApi.login(credentials)
+      get().setUser(response.user)
+      get().setTokens(response.tokens)
+      set({ isLoading: false })
     } catch (error) {
-      set({
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Login failed',
-      })
+      set({ isLoading: false, error: error instanceof Error ? error.message : 'Login failed' })
+      throw error
     }
   },
-
-  register: async (credentials: RegisterCredentials) => {
+  register: async (credentials) => {
     set({ isLoading: true, error: null })
-
     try {
-      const mockResponse = {
-        user: {
-          id: '1',
-          email: credentials.email,
-          firstName: credentials.firstName,
-          lastName: credentials.lastName,
-          isActive: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        tokens: {
-          accessToken: 'mock-access-token',
-          refreshToken: 'mock-refresh-token',
-        },
-      }
-
-      localStorage.setItem('auth_token:v1', mockResponse.tokens.accessToken)
-      localStorage.setItem('refresh_token:v1', mockResponse.tokens.refreshToken)
-      localStorage.setItem('user:v1', JSON.stringify(mockResponse.user))
-
-      set({
-        user: mockResponse.user,
-        tokens: mockResponse.tokens,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      })
+      const response = await authApi.register(credentials)
+      get().setUser(response.user)
+      get().setTokens(response.tokens)
+      set({ isLoading: false })
     } catch (error) {
       set({
         isLoading: false,
         error: error instanceof Error ? error.message : 'Registration failed',
       })
+      throw error
     }
   },
-
-  magicLink: async (_request: MagicLinkRequest) => {
+  magicLink: async (request) => {
     set({ isLoading: true, error: null })
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      set({
-        isLoading: false,
-        error: null,
-      })
+      await authApi.magicLink(request)
+      set({ isLoading: false })
     } catch (error) {
-      set({
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Magic link failed',
-      })
+      set({ isLoading: false, error: error instanceof Error ? error.message : 'Magic link failed' })
+      throw error
     }
   },
-
   logout: () => {
     localStorage.removeItem('auth_token:v1')
     localStorage.removeItem('refresh_token:v1')
     localStorage.removeItem('user:v1')
-
-    set({
-      user: null,
-      tokens: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
-    })
+    set({ ...initialState })
   },
-
   refreshToken: async () => {
     const { tokens } = get()
     if (!tokens?.refreshToken) return
-
     set({ isLoading: true })
-
     try {
-      const mockTokens = {
-        accessToken: 'new-mock-access-token',
-        refreshToken: 'new-mock-refresh-token',
-      }
-
-      localStorage.setItem('auth_token:v1', mockTokens.accessToken)
-      localStorage.setItem('refresh_token:v1', mockTokens.refreshToken)
-
-      set({
-        tokens: mockTokens,
-        isLoading: false,
-      })
+      const response = await authApi.refreshToken(tokens.refreshToken)
+      get().setTokens({ ...tokens, accessToken: response.accessToken })
+      set({ isLoading: false })
     } catch {
       get().logout()
+      set({ error: 'Your session has expired. Please sign in again.' })
     }
   },
-
-  setUser: (user: User) => {
-    set({ user })
+  setUser: (user) => {
     localStorage.setItem('user:v1', JSON.stringify(user))
+    set({ user })
   },
-
-  setTokens: (tokens: AuthTokens) => {
-    set({ tokens })
+  setTokens: (tokens) => {
     localStorage.setItem('auth_token:v1', tokens.accessToken)
     localStorage.setItem('refresh_token:v1', tokens.refreshToken)
+    set({ tokens, isAuthenticated: true, error: null })
   },
-
-  setLoading: (isLoading: boolean) => {
-    set({ isLoading })
-  },
-
-  setError: (error: string | null) => {
-    set({ error })
-  },
-
-  clearError: () => {
-    set({ error: null })
-  },
-
+  setLoading: (isLoading) => set({ isLoading }),
+  setError: (error) => set({ error }),
+  clearError: () => set({ error: null }),
   initializeAuth: () => {
     try {
-      const token = localStorage.getItem('auth_token:v1')
+      const accessToken = localStorage.getItem('auth_token:v1')
       const refreshToken = localStorage.getItem('refresh_token:v1')
       const userStr = localStorage.getItem('user:v1')
-
-      if (token && refreshToken && userStr) {
-        const user = JSON.parse(userStr)
-        set({
-          user,
-          tokens: { accessToken: token, refreshToken },
-          isAuthenticated: true,
-        })
+      if (accessToken && refreshToken && userStr) {
+        const user: User = JSON.parse(userStr)
+        set({ user, tokens: { accessToken, refreshToken }, isAuthenticated: true })
       }
-    } catch (error) {
-      console.error('Failed to initialize auth:', error)
-      localStorage.removeItem('auth_token:v1')
-      localStorage.removeItem('refresh_token:v1')
-      localStorage.removeItem('user:v1')
+    } catch {
+      get().logout()
     }
   },
 })

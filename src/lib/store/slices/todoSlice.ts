@@ -1,15 +1,8 @@
 import { generateId } from '@/lib/utils'
-import type {
-  CreateTodoRequest,
-  Todo,
-  TodoFilters,
-  TodoState,
-  UpdateTodoRequest,
-} from '@/types'
+import type { CreateTodoRequest, Todo, TodoFilters, TodoState, UpdateTodoRequest } from '@/types'
 import type { StateCreator } from 'zustand'
 
 export interface TodoSlice extends TodoState {
-  fetchTodos: () => Promise<void>
   createTodo: (todo: CreateTodoRequest) => Promise<void>
   updateTodo: (id: string, updates: UpdateTodoRequest) => Promise<void>
   deleteTodo: (id: string) => Promise<void>
@@ -28,14 +21,7 @@ const initialFilters: TodoFilters = {
   tags: [],
 }
 
-const initialState: TodoState = {
-  todos: [],
-  isLoading: false,
-  error: null,
-  filters: initialFilters,
-}
-
-const mockTodos: Todo[] = [
+const sampleTodos: Todo[] = [
   {
     id: '1',
     title: 'Complete project setup',
@@ -73,34 +59,20 @@ const mockTodos: Todo[] = [
   },
 ]
 
+const initialState: TodoState = {
+  todos: sampleTodos,
+  isLoading: false,
+  error: null,
+  filters: initialFilters,
+}
+
 export const createTodoSlice: StateCreator<TodoSlice> = (set, get) => ({
   ...initialState,
-
-  fetchTodos: async () => {
-    set({ isLoading: true, error: null })
-
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      set({
-        todos: mockTodos,
-        isLoading: false,
-        error: null,
-      })
-    } catch (error) {
-      set({
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch todos',
-      })
-    }
-  },
 
   createTodo: async (todoData: CreateTodoRequest) => {
     set({ isLoading: true, error: null })
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 300))
-
       const newTodo: Todo = {
         id: generateId(),
         ...todoData,
@@ -129,17 +101,15 @@ export const createTodoSlice: StateCreator<TodoSlice> = (set, get) => ({
     set({ isLoading: true, error: null })
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 300))
-
       const { todos } = get()
-      const updatedTodos = todos.map(todo =>
+      const updatedTodos = todos.map((todo) =>
         todo.id === id
           ? {
               ...todo,
               ...updates,
               updatedAt: new Date().toISOString(),
             }
-          : todo
+          : todo,
       )
 
       set({
@@ -159,10 +129,8 @@ export const createTodoSlice: StateCreator<TodoSlice> = (set, get) => ({
     set({ isLoading: true, error: null })
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 300))
-
       const { todos } = get()
-      const filteredTodos = todos.filter(todo => todo.id !== id)
+      const filteredTodos = todos.filter((todo) => todo.id !== id)
 
       set({
         todos: filteredTodos,
@@ -179,7 +147,7 @@ export const createTodoSlice: StateCreator<TodoSlice> = (set, get) => ({
 
   toggleTodo: async (id: string) => {
     const { todos, updateTodo } = get()
-    const todo = todos.find(t => t.id === id)
+    const todo = todos.find((t) => t.id === id)
 
     if (todo) {
       await updateTodo(id, { completed: !todo.completed })

@@ -24,16 +24,13 @@ export const useMediaQuery = (query: string): boolean => {
 }
 
 export const useIsMobile = () => useMediaQuery('(max-width: 639px)')
-export const useIsTablet = () =>
-  useMediaQuery('(min-width: 640px) and (max-width: 1023px)')
+export const useIsTablet = () => useMediaQuery('(min-width: 640px) and (max-width: 1023px)')
 export const useIsDesktop = () => useMediaQuery('(min-width: 1024px)')
 export const useIsLargeDesktop = () => useMediaQuery('(min-width: 1280px)')
 
-export const usePrefersDarkMode = () =>
-  useMediaQuery('(prefers-color-scheme: dark)')
+export const usePrefersDarkMode = () => useMediaQuery('(prefers-color-scheme: dark)')
 
-export const usePrefersReducedMotion = () =>
-  useMediaQuery('(prefers-reduced-motion: reduce)')
+export const usePrefersReducedMotion = () => useMediaQuery('(prefers-reduced-motion: reduce)')
 
 export const useBreakpoint = (): 'mobile' | 'tablet' | 'desktop' | 'large' => {
   const isMobile = useIsMobile()

@@ -19,25 +19,21 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, Plus, X } from 'lucide-react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useId } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
 const todoSchema = z.object({
-  title: z
-    .string()
-    .min(1, 'Title is required')
-    .max(100, 'Title must be less than 100 characters'),
-  description: z
-    .string()
-    .max(500, 'Description must be less than 500 characters')
-    .optional(),
+  title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
+  description: z.string().max(500, 'Description must be less than 500 characters').optional(),
   priority: z.enum(['low', 'medium', 'high']),
   dueDate: z.string().optional(),
   tags: z.array(z.string()).optional(),
 })
 
 type TodoFormValues = z.infer<typeof todoSchema>
+const todoFieldsSchema = todoSchema.extend({ tagInput: z.string() })
+type TodoFormFields = z.infer<typeof todoFieldsSchema>
 
 interface TodoFormProps {
   defaultValues?: Partial<TodoFormValues & { id: string }>
@@ -46,41 +42,45 @@ interface TodoFormProps {
   isLoading?: boolean
 }
 
-export function TodoForm({
-  defaultValues,
-  onSubmit,
-  onCancel,
-  isLoading = false,
-}: TodoFormProps) {
-  const [tagInput, setTagInput] = useState('')
-  const [tags, setTags] = useState<string[]>(defaultValues?.tags || [])
+export function TodoForm({ defaultValues, onSubmit, onCancel, isLoading = false }: TodoFormProps) {
+  const tagInputId = useId()
 
   const isEditing = !!defaultValues?.id
 
-  const form = useForm<TodoFormValues>({
-    resolver: zodResolver(todoSchema),
+  const form = useForm<TodoFormFields>({
+    resolver: zodResolver(todoFieldsSchema),
     defaultValues: {
       title: defaultValues?.title || '',
       description: defaultValues?.description || '',
       priority: defaultValues?.priority || 'medium',
       dueDate: defaultValues?.dueDate || '',
       tags: defaultValues?.tags || [],
+      tagInput: '',
     },
   })
+  const tags = useWatch({ control: form.control, name: 'tags' }) ?? []
+  const tagInput = useWatch({ control: form.control, name: 'tagInput' })
 
-  const handleSubmit = async (data: TodoFormValues) => {
-    await onSubmit?.({ ...data, tags })
+  const handleSubmit = async (data: TodoFormFields) => {
+    await onSubmit?.(todoSchema.parse(data))
   }
 
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()])
-      setTagInput('')
+      form.setValue('tags', [...tags, tagInput.trim()], { shouldDirty: true, shouldValidate: true })
+      form.setValue('tagInput', '')
     }
   }
 
   const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove))
+    form.setValue(
+      'tags',
+      tags.filter((tag) => tag !== tagToRemove),
+      {
+        shouldDirty: true,
+        shouldValidate: true,
+      },
+    )
   }
 
   const handleTagKeyDown = (e: React.KeyboardEvent) => {
@@ -94,9 +94,7 @@ export function TodoForm({
     <Form {...form}>
       <div className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold">
-            {isEditing ? 'Edit Todo' : 'Create New Todo'}
-          </h2>
+          <h2 className="text-lg font-semibold">{isEditing ? 'Edit Todo' : 'Create New Todo'}</h2>
           <p className="text-sm text-muted-foreground">
             {isEditing
               ? 'Update your todo details below.'
@@ -144,10 +142,7 @@ export function TodoForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Priority</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select priority" />
@@ -180,12 +175,12 @@ export function TodoForm({
           </div>
 
           <div className="space-y-2">
-            <Label>Tags</Label>
+            <Label htmlFor={tagInputId}>Tags</Label>
             <div className="flex gap-2">
               <Input
+                id={tagInputId}
                 placeholder="Add a tag"
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
+                {...form.register('tagInput')}
                 onKeyDown={handleTagKeyDown}
               />
               <Button
@@ -193,6 +188,7 @@ export function TodoForm({
                 variant="outline"
                 size="icon"
                 onClick={addTag}
+                aria-label="Add tag"
                 disabled={!tagInput.trim()}
               >
                 <Plus className="size-4" />
@@ -200,7 +196,7 @@ export function TodoForm({
             </div>
             {tags.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
-                {tags.map(tag => (
+                {tags.map((tag) => (
                   <span
                     key={tag}
                     className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs text-secondary-foreground"
@@ -209,6 +205,7 @@ export function TodoForm({
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
+                      aria-label={`Remove tag ${tag}`}
                       className="hover:text-destructive"
                     >
                       <X className="size-3" />
@@ -225,12 +222,7 @@ export function TodoForm({
               {isEditing ? 'Update Todo' : 'Create Todo'}
             </Button>
             {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isLoading}
-              >
+              <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
                 Cancel
               </Button>
             )}

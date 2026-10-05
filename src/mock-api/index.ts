@@ -92,17 +92,14 @@ const mockTodos: Todo[] = [
   },
 ]
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const generateId = () => Math.random().toString(36).substr(2, 9)
 
 export const mockApi = {
   auth: {
     login: async (credentials: { email: string; password: string }) => {
-      if (
-        credentials.email !== 'demo@example.com' ||
-        credentials.password !== 'password'
-      ) {
+      if (credentials.email !== 'demo@example.com' || credentials.password !== 'password') {
         throw new Error('Invalid credentials')
       }
       await delay(800)
@@ -171,23 +168,19 @@ export const mockApi = {
       if (params?.search) {
         const search = params.search.toLowerCase()
         filteredTodos = filteredTodos.filter(
-          todo =>
+          (todo) =>
             todo.title.toLowerCase().includes(search) ||
             todo.description?.toLowerCase().includes(search) ||
-            todo.tags.some(tag => tag.toLowerCase().includes(search))
+            todo.tags.some((tag) => tag.toLowerCase().includes(search)),
         )
       }
 
       if (params?.priority && params.priority !== 'all') {
-        filteredTodos = filteredTodos.filter(
-          todo => todo.priority === params.priority
-        )
+        filteredTodos = filteredTodos.filter((todo) => todo.priority === params.priority)
       }
 
       if (typeof params?.completed === 'boolean') {
-        filteredTodos = filteredTodos.filter(
-          todo => todo.completed === params.completed
-        )
+        filteredTodos = filteredTodos.filter((todo) => todo.completed === params.completed)
       }
 
       const page = params?.page || 1
@@ -209,7 +202,7 @@ export const mockApi = {
 
     getById: async (id: string): Promise<Todo> => {
       await delay(200)
-      const todo = mockTodos.find(t => t.id === id)
+      const todo = mockTodos.find((t) => t.id === id)
       if (!todo) throw new Error('Todo not found')
       return todo
     },
@@ -237,7 +230,7 @@ export const mockApi = {
 
     update: async (id: string, updates: Partial<Todo>): Promise<Todo> => {
       await delay(400)
-      const todoIndex = mockTodos.findIndex(t => t.id === id)
+      const todoIndex = mockTodos.findIndex((t) => t.id === id)
       if (todoIndex === -1) throw new Error('Todo not found')
       const updatedTodo: Todo = {
         ...mockTodos[todoIndex]!,
@@ -250,7 +243,7 @@ export const mockApi = {
 
     delete: async (id: string) => {
       await delay(300)
-      const todoIndex = mockTodos.findIndex(t => t.id === id)
+      const todoIndex = mockTodos.findIndex((t) => t.id === id)
       if (todoIndex === -1) throw new Error('Todo not found')
       mockTodos.splice(todoIndex, 1)
       return { message: 'Todo deleted successfully' }
@@ -258,7 +251,7 @@ export const mockApi = {
 
     toggle: async (id: string): Promise<Todo> => {
       await delay(200)
-      const todoIndex = mockTodos.findIndex(t => t.id === id)
+      const todoIndex = mockTodos.findIndex((t) => t.id === id)
       if (todoIndex === -1) throw new Error('Todo not found')
       const updatedTodo: Todo = {
         ...mockTodos[todoIndex]!,
@@ -272,17 +265,17 @@ export const mockApi = {
     getStats: async () => {
       await delay(300)
       const total = mockTodos.length
-      const completed = mockTodos.filter(t => t.completed).length
+      const completed = mockTodos.filter((t) => t.completed).length
       const pending = total - completed
       const overdue = mockTodos.filter(
-        t => t.dueDate && new Date(t.dueDate) < new Date() && !t.completed
+        (t) => t.dueDate && new Date(t.dueDate) < new Date() && !t.completed,
       ).length
       const byPriority = mockTodos.reduce(
         (acc, todo) => {
           acc[todo.priority] = (acc[todo.priority] || 0) + 1
           return acc
         },
-        {} as Record<string, number>
+        {} as Record<string, number>,
       )
       return { total, completed, pending, overdue, byPriority }
     },

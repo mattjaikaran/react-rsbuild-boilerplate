@@ -52,7 +52,10 @@ export const authApi = {
     return data
   },
 
-  changePassword: async (payload: { currentPassword: string; newPassword: string }): Promise<{ message: string }> => {
+  changePassword: async (payload: {
+    currentPassword: string
+    newPassword: string
+  }): Promise<{ message: string }> => {
     const { data } = await apiClient.post('/auth/change-password', payload)
     return data
   },
@@ -62,7 +65,10 @@ export const authApi = {
     return data
   },
 
-  resetPassword: async (payload: { token: string; newPassword: string }): Promise<{ message: string }> => {
+  resetPassword: async (payload: {
+    token: string
+    newPassword: string
+  }): Promise<{ message: string }> => {
     const { data } = await apiClient.post('/auth/password-reset/confirm', payload)
     return data
   },

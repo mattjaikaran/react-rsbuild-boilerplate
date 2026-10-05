@@ -5,15 +5,19 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Briefcase, Code2, Mail, MessageCircle } from 'lucide-react'
+import { useState } from 'react'
 
+// TanStack's file-router plugin requires this registration export and owns route HMR.
+// react-doctor-disable-next-line react-doctor/only-export-components
 export const Route = createFileRoute('/contact')({
   component: ContactPage,
 })
 
 export function ContactPage() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submission, setSubmission] = useState<FormData | null>(null)
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('Contact form submitted')
+    setSubmission(new FormData(e.currentTarget))
   }
 
   return (
@@ -35,28 +39,29 @@ export function ContactPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" placeholder="Your first name" />
+                  <Input id="firstName" name="firstName" placeholder="Your first name" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" placeholder="Your last name" />
+                  <Input id="lastName" name="lastName" placeholder="Your last name" />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="your@email.com" />
+                <Input id="email" name="email" type="email" placeholder="your@email.com" />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="subject">Subject</Label>
-                <Input id="subject" placeholder="What's this about?" />
+                <Input id="subject" name="subject" placeholder="What's this about?" />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="message">Message</Label>
                 <Textarea
                   id="message"
+                  name="message"
                   placeholder="Tell us more about your inquiry..."
                   className="min-h-[120px]"
                 />
@@ -65,6 +70,11 @@ export function ContactPage() {
               <Button type="submit" className="w-full">
                 Send Message
               </Button>
+              {submission && (
+                <output className="block text-sm text-muted-foreground">
+                  Message captured for this session. This demo does not send messages.
+                </output>
+              )}
             </form>
           </CardContent>
         </Card>
@@ -79,9 +89,7 @@ export function ContactPage() {
                 <Mail className="size-5 text-muted-foreground" />
                 <div>
                   <p className="font-medium">Email</p>
-                  <p className="text-sm text-muted-foreground">
-                    hello@example.com
-                  </p>
+                  <p className="text-sm text-muted-foreground">hello@example.com</p>
                 </div>
               </div>
 
@@ -92,6 +100,7 @@ export function ContactPage() {
                     href="https://github.com"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="GitHub (opens in a new tab)"
                     className="text-muted-foreground transition-colors hover:text-primary"
                   >
                     <Code2 className="size-5" />
@@ -100,6 +109,7 @@ export function ContactPage() {
                     href="https://twitter.com"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="Twitter (opens in a new tab)"
                     className="text-muted-foreground transition-colors hover:text-primary"
                   >
                     <MessageCircle className="size-5" />
@@ -108,6 +118,7 @@ export function ContactPage() {
                     href="https://linkedin.com"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="LinkedIn (opens in a new tab)"
                     className="text-muted-foreground transition-colors hover:text-primary"
                   >
                     <Briefcase className="size-5" />
@@ -125,24 +136,21 @@ export function ContactPage() {
               <div>
                 <p className="font-medium">How can I contribute?</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Check out our GitHub repository for contribution guidelines
-                  and open issues.
+                  Check out our GitHub repository for contribution guidelines and open issues.
                 </p>
               </div>
 
               <div>
                 <p className="font-medium">Is this free to use?</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Yes! This boilerplate is open source and free to use for any
-                  project.
+                  Yes! This boilerplate is open source and free to use for any project.
                 </p>
               </div>
 
               <div>
                 <p className="font-medium">Can I customize it?</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Absolutely! The boilerplate is designed to be easily
-                  customizable and extensible.
+                  Absolutely! The boilerplate is designed to be easily customizable and extensible.
                 </p>
               </div>
             </CardContent>

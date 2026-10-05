@@ -2,6 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useState } from 'react'
 
+// TanStack's file-router plugin requires this registration export and owns route HMR.
+// react-doctor-disable-next-line react-doctor/only-export-components
 export const Route = createFileRoute('/faq')({
   component: FAQPage,
 })
@@ -93,16 +95,14 @@ export function FAQPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Frequently Asked Questions
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h1>
         <p className="mt-4 text-lg text-muted-foreground">
           Find answers to common questions about our service
         </p>
       </div>
 
       <div className="divide-y divide-border">
-        {faqData.map(item => (
+        {faqData.map((item) => (
           <FAQItemCard key={item.id} item={item} />
         ))}
       </div>
@@ -110,8 +110,7 @@ export function FAQPage() {
       <div className="rounded-lg bg-muted p-8 text-center">
         <h2 className="text-xl font-semibold">Still have questions?</h2>
         <p className="mt-2 text-muted-foreground">
-          Can&apos;t find the answer you&apos;re looking for? Please contact our support
-          team.
+          Can&apos;t find the answer you&apos;re looking for? Please contact our support team.
         </p>
         <div className="mt-4">
           <a

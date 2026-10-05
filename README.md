@@ -35,21 +35,24 @@ bun run preview
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `bun run dev` | Start dev server on port 3000 |
-| `bun run build` | Production build |
-| `bun run preview` | Preview production build |
-| `bun run lint` | Run ESLint |
-| `bun run lint:fix` | Run ESLint with auto-fix |
-| `bun run format` | Format code with Prettier |
-| `bun run typecheck` | TypeScript type checking |
-| `bun run test` | Run tests |
-| `bun run test:watch` | Run tests in watch mode |
-| `bun run test:ui` | Vitest UI |
-| `bun run test:coverage` | Tests with coverage report |
-| `bun run check` | Run typecheck + lint + test |
-| `bun run clean` | Remove dist and node_modules |
+| Command                 | Description                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------- |
+| `bun run dev`           | Start dev server on port 3000                                                     |
+| `bun run build`         | Production build                                                                  |
+| `bun run preview`       | Preview production build                                                          |
+| `bun run lint`          | Run Oxlint                                                                        |
+| `bun run lint:strict`   | Run Oxlint and deny warnings                                                      |
+| `bun run lint:fix`      | Run Oxlint with auto-fix                                                          |
+| `bun run format`        | Format the repository with Oxfmt                                                  |
+| `bun run format:check`  | Check repository formatting                                                       |
+| `bun run doctor`        | Run pinned React Doctor; errors block, telemetry and supply-chain checks disabled |
+| `bun run typecheck`     | TypeScript type checking                                                          |
+| `bun run test`          | Run tests                                                                         |
+| `bun run test:watch`    | Run tests in watch mode                                                           |
+| `bun run test:ui`       | Vitest UI                                                                         |
+| `bun run test:coverage` | Tests with coverage report                                                        |
+| `bun run check`         | Run typecheck + lint + test                                                       |
+| `bun run clean`         | Remove dist and node_modules                                                      |
 
 ## Makefile
 
@@ -105,6 +108,12 @@ This boilerplate includes Button, Card, and Input. To add more, copy from [shadc
 ## Environment Variables
 
 Copy `.env.example` to `.env` and update values. Rsbuild uses `PUBLIC_` prefix for client-side env vars.
+
+## Design and Quality Tooling
+
+The landing page is a warm-paper, cobalt-accented starter with a sample workspace preview and working links to the included dashboard and task workflow. See [DESIGN.md](DESIGN.md) for the theme tokens, edit map, and accessibility conventions.
+
+Oxlint uses its built-in TypeScript, React, and JSX accessibility plugins, including Rules of Hooks and exhaustive dependencies. Configuration lives in `.oxlintrc.json`; formatting lives in `.oxfmtrc.json`. Generated routes, build output, and coverage are excluded. React Doctor's intentional exceptions remain in `doctor.config.json`. Run `bun run doctor -- --json` for machine-readable diagnostics.
 
 ## License
 

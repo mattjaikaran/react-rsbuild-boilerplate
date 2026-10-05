@@ -1,6 +1,5 @@
 import {
   useState,
-  useRef,
   useCallback,
   type ReactNode,
   type SyntheticEvent,
@@ -37,42 +36,24 @@ const roundedMap: Record<Exclude<ImageRounded, false>, string> = {
   full: 'rounded-full',
 }
 
-function Image({
-  src,
-  alt,
-  layout = 'responsive',
-  aspectRatio,
-  objectFit = 'cover',
-  objectPosition = 'center',
-  placeholder = 'none',
-  blurDataURL,
-  priority = false,
-  fallbackSrc,
-  fallback,
-  rounded = false,
-  wrapperClassName,
-  className,
-  width,
-  height,
-  style,
-  onLoad,
-  onError,
-  ...props
-}: ImageProps) {
-  const prevSrcRef = useRef(src)
+function useImageLoadState(
+  src: string,
+  fallbackSrc: string | undefined,
+  onLoad: ImageProps['onLoad'],
+  onError: ImageProps['onError'],
+) {
+  const [previousSrc, setPreviousSrc] = useState(src)
   const [useFallback, setUseFallback] = useState(false)
   const [status, setStatus] = useState<LoadStatus>('loading')
 
-  // Derived state during render — reset when src prop changes (no useEffect needed)
-  if (prevSrcRef.current !== src) {
-    prevSrcRef.current = src
+  // Reset during render so a new source never inherits the previous load state.
+  if (previousSrc !== src) {
+    setPreviousSrc(src)
     setUseFallback(false)
     setStatus('loading')
   }
 
-  const currentSrc = useFallback && fallbackSrc ? fallbackSrc : src
-
-  // Callback ref handles already-cached images (fires on mount before onLoad would)
+  // Callback ref handles already-cached images on mount.
   const imgCallbackRef = useCallback((img: HTMLImageElement | null) => {
     if (img?.complete) {
       setStatus('loaded')
@@ -94,14 +75,27 @@ function Image({
     onError?.(e)
   }
 
-  const isLoading = status === 'loading'
-  const isError = status === 'error'
-  const roundedClass = rounded ? roundedMap[rounded] : ''
-
-  if (isError && fallback) {
-    return <>{fallback}</>
+  return {
+    currentSrc: useFallback && fallbackSrc ? fallbackSrc : src,
+    status,
+    imgCallbackRef,
+    handleLoad,
+    handleError,
   }
+}
 
+function getImageStyles({
+  layout,
+  aspectRatio,
+  objectFit,
+  objectPosition,
+  width,
+  height,
+  style,
+}: Pick<
+  ImageProps,
+  'layout' | 'aspectRatio' | 'objectFit' | 'objectPosition' | 'width' | 'height' | 'style'
+>) {
   const wrapperStyle: CSSProperties = {}
   const imgStyle: CSSProperties = { objectFit, objectPosition, ...style }
 
@@ -135,6 +129,56 @@ function Image({
     imgStyle.height = '100%'
   }
 
+  return { wrapperStyle, imgStyle }
+}
+
+function Image({
+  src,
+  alt,
+  layout = 'responsive',
+  aspectRatio,
+  objectFit = 'cover',
+  objectPosition = 'center',
+  placeholder = 'none',
+  blurDataURL,
+  priority = false,
+  fallbackSrc,
+  fallback,
+  rounded = false,
+  wrapperClassName,
+  className,
+  width,
+  height,
+  style,
+  onLoad,
+  onError,
+  ...props
+}: ImageProps) {
+  const { currentSrc, status, imgCallbackRef, handleLoad, handleError } = useImageLoadState(
+    src,
+    fallbackSrc,
+    onLoad,
+    onError,
+  )
+
+  const isLoading = status === 'loading'
+  const isError = status === 'error'
+  const roundedClass = rounded ? roundedMap[rounded] : ''
+
+  if (isError && fallback) {
+    return <>{fallback}</>
+  }
+
+  const { wrapperStyle, imgStyle } = getImageStyles({
+    layout,
+    aspectRatio,
+    objectFit,
+    objectPosition,
+    width,
+    height,
+    style,
+  })
+
   const showSkeleton = isLoading && placeholder === 'skeleton'
   const showBlur = isLoading && placeholder === 'blur' && Boolean(blurDataURL)
 
@@ -144,9 +188,7 @@ function Image({
       style={wrapperStyle}
     >
       {showSkeleton && (
-        <span
-          className={cn('absolute inset-0 animate-pulse bg-muted', roundedClass)}
-        />
+        <span className={cn('absolute inset-0 animate-pulse bg-muted', roundedClass)} />
       )}
       {showBlur && (
         <img
@@ -197,32 +239,14 @@ function AvatarImage({ size = 40, width, height, ...props }: AvatarImageProps) {
   )
 }
 
-function HeroImage(
-  props: Omit<ImageProps, 'layout' | 'aspectRatio' | 'priority' | 'objectFit'>,
-) {
-  return (
-    <Image
-      layout="responsive"
-      aspectRatio="16/9"
-      priority
-      objectFit="cover"
-      {...props}
-    />
-  )
+function HeroImage(props: Omit<ImageProps, 'layout' | 'aspectRatio' | 'priority' | 'objectFit'>) {
+  return <Image layout="responsive" aspectRatio="16/9" priority objectFit="cover" {...props} />
 }
 
 function ThumbnailImage(
   props: Omit<ImageProps, 'layout' | 'aspectRatio' | 'rounded' | 'objectFit'>,
 ) {
-  return (
-    <Image
-      layout="responsive"
-      aspectRatio="16/9"
-      rounded="md"
-      objectFit="cover"
-      {...props}
-    />
-  )
+  return <Image layout="responsive" aspectRatio="16/9" rounded="md" objectFit="cover" {...props} />
 }
 
 export { Image, AvatarImage, HeroImage, ThumbnailImage }

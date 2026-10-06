@@ -13,7 +13,7 @@ bun run format       # Oxfmt
 bun run doctor       # Pinned React Doctor, errors block
 ```
 
-Design guidance and the frontend edit map are in `DESIGN.md`. Use semantic tokens from `src/index.css`, preserve keyboard focus and reduced-motion support, and keep preview data clearly labeled as sample content. Oxlint and Oxfmt configuration excludes generated routes and build artifacts. Preserve the intentional scoped exceptions in `doctor.config.json`.
+`DESIGN.md` is the authoritative repository-local visual guide. Update its design brief first and follow its source edit map and “Applying a new design” workflow. Use semantic tokens from `src/index.css`, preserve keyboard focus and reduced-motion support, and keep preview data clearly labeled as sample content. Preserve system-default appearance, explicit persisted light/dark choices, and the shared direct two-way toggle with no System option. Oxlint and Oxfmt configuration excludes generated routes and build artifacts. Preserve the intentional scoped exceptions in `doctor.config.json`.
 
 ## Architecture
 

@@ -111,9 +111,9 @@ Copy `.env.example` to `.env` and update values. Rsbuild uses `PUBLIC_` prefix f
 
 ## Design and Quality Tooling
 
-The landing page is a warm-paper, cobalt-accented starter with a sample workspace preview and working links to the included dashboard and task workflow. See [DESIGN.md](DESIGN.md) for the theme tokens, edit map, and accessibility conventions.
+The landing page is a warm-paper starter with monochrome actions, a pure-black neutral dark theme, a sample workspace preview, and working links to the included dashboard and task workflow. [DESIGN.md](DESIGN.md) is the authoritative guide: update its design brief first, then follow its source edit map and “Applying a new design” workflow.
 
-Oxlint uses its built-in TypeScript, React, and JSX accessibility plugins, including Rules of Hooks and exhaustive dependencies. Configuration lives in `.oxlintrc.json`; formatting lives in `.oxfmtrc.json`. Generated routes, build output, and coverage are excluded. React Doctor's intentional exceptions remain in `doctor.config.json`. Run `bun run doctor -- --json` for machine-readable diagnostics.
+Oxlint uses its built-in TypeScript, React, and JSX accessibility plugins, including Rules of Hooks and exhaustive dependencies. Configuration lives in `.oxlintrc.json`; formatting lives in `.oxfmtrc.json`. Generated routes, build output, and coverage are excluded. React Doctor's intentional exceptions remain in `doctor.config.json`. Run `bun run doctor --json` for machine-readable diagnostics.
 
 ## License
 

@@ -6,10 +6,11 @@ export function ThemeToggle() {
   const toggleTheme = useToggleTheme()
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggleTheme}>
-      <Sun className="size-5 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute size-5 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
-      <span className="sr-only">Toggle theme</span>
+    <Button type="button" variant="outline" className="gap-2" onClick={toggleTheme}>
+      <Moon aria-hidden="true" className="size-4 dark:hidden" />
+      <Sun aria-hidden="true" className="hidden size-4 dark:block" />
+      <span className="dark:hidden">Switch to dark mode</span>
+      <span className="hidden dark:inline">Switch to light mode</span>
     </Button>
   )
 }

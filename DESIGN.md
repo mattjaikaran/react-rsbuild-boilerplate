@@ -1,21 +1,33 @@
 # Design Guide
 
-## Direction
+This is the authoritative repository-local guide for visual changes. Update the brief here before changing implementation; README and CLAUDE defer to this guide.
 
-Warm paper, ink typography, and vivid cobalt make this starter feel like a working notebook rather than a generic marketing template. Mint marks positive progress; coral is reserved for destructive actions. The landing composition pairs an editorial introduction with a clearly labeled sample workspace. It demonstrates a product workflow without claiming live metrics or inventing customer endorsements.
+## Design brief
+
+Fill or revise these decisions for each new design before editing code:
+
+- **Direction:** warm-paper editorial workspace, restrained monochrome actions, pure-black dark canvas, and neutral dark surfaces. Sample content is clearly labeled, never presented as live metrics or endorsements.
+- **Colors:** record both themes' background, foreground, surface, action, focus, border, and status token pairs. Keep dark background `0 0% 0%`; primary actions and focus are monochrome. Light paper and mint accents remain intentional; coral denotes destructive actions.
+- **Typography:** local Avenir Next/Avenir/Segoe UI sans stack; limited serif italic editorial accents. Specify heading scale, body measure, weight, and line height.
+- **Layout:** responsive editorial hero and workspace preview; define page width, section spacing, card padding, and mobile stacking before modifying compositions.
+- **Interactions:** solid primary for the next action, outline for supporting navigation; visible keyboard focus, reduced motion, and shared direct light/dark toggle. Specify hover, focus, disabled, validation, and empty states.
 
 ## Edit map
 
 - `src/routes/index.tsx`: headline, calls to action, sample milestones, and foundation cards. The module-level arrays are the simplest place to change preview content.
 - `src/index.css`: all semantic light/dark theme tokens, radii, global font stack, keyboard focus, and reduced-motion treatment.
-- `src/components/layouts/main-layout.tsx`: shared navigation, page width, and footer.
-- `src/components/shared/theme-toggle.tsx`: existing light/dark control.
-- `src/components/ui/`: local Radix-based primitives. Edit these directly rather than wrapping a second component system around them.
-- `src/routes/dashboard/` and `src/routes/todos/`: working application examples linked from the landing. Keep these features connected when changing navigation.
+- `src/components/layouts/main-layout.tsx`: shared navigation, page width, footer, and OS-change subscription while the preference is `system`.
+- `src/components/shared/theme-toggle.tsx`: visible direct light/dark control used by header and settings.
+- `src/components/layouts/dashboard-layout.tsx` and `src/components/nav/navbar.tsx`: additional shared navigation compositions that reuse the same theme control.
+- `src/components/settings/appearance-settings.tsx`: appearance explanation and the shared control; `src/routes/settings/index.tsx` owns settings navigation and composition.
+- `src/lib/store/slices/uiSlice.ts`: initial system preference, resolved two-way `toggleTheme`, and explicit theme application. `src/lib/store/index.ts` owns startup restoration and Zustand persistence.
+- `src/components/ui/button.tsx`, `src/components/ui/card.tsx`, `src/components/ui/input.tsx`, `src/components/ui/textarea.tsx`, `src/components/ui/select.tsx`, and `src/components/ui/form.tsx`: shared local primitives and states; other primitives live beside them. Edit these directly instead of adding a second component system.
+- `src/routes/dashboard/index.tsx`, `src/routes/todos/index.tsx`, `src/routes/todos/create.tsx`: working application examples linked from the landing. Keep these workflows connected when changing navigation.
+- `src/routes/auth/`, `src/components/layouts/auth-layout.tsx`, and `src/forms/`: authentication layout and form compositions.
 
 ## Tokens and color
 
-Use `bg-background`, `text-foreground`, `bg-card`, `text-muted-foreground`, `border-border`, and `text-primary` rather than hard-coded colors. Their HSL values live in `:root` and `.dark` in `src/index.css` and are exposed through Tailwind's `@theme`. `primary` is cobalt in light mode and a lighter blue in dark mode. `secondary` is a quiet surface, `accent` is mint, and `destructive` is coral. Pair surfaces with their matching foreground tokens. Adjust both themes together; do not invert every surface mechanically. Ring color follows the primary action color.
+Use `bg-background`, `text-foreground`, `bg-card`, `text-muted-foreground`, `border-border`, and `text-primary` rather than hard-coded theme colors. Their HSL values live in `:root` and `.dark` in `src/index.css` and are exposed through Tailwind's `@theme`. Primary actions and focus rings are neutral ink in light mode and near-white in dark mode. Dark surfaces, borders, and muted text have zero saturation; the dark background is pure black. Light mode retains paper surfaces and mint accents; destructive status is coral. Pair surfaces with matching foreground tokens and adjust both themes deliberately. Root `color-scheme` follows the resolved light/dark class so native controls match an explicit choice.
 
 ## Typography and spacing
 
@@ -30,6 +42,30 @@ Use the shared Button variants: solid primary for the next useful action, outlin
 ## Accessibility
 
 Preserve semantic sections, named navigation, ordered milestones, and heading order. Decorative icons have `aria-hidden`; status icons have meaningful labels. Never convey destructive or completed status through color alone. Every interactive element must work from the keyboard and retain a visible focus ring. Keep text contrast readable in both themes, enlarge targets with padding, and maintain understandable link labels. The global `prefers-reduced-motion` rule disables prolonged animations and transitions; any new animation must respect it. No hover-only information or automatically moving preview content.
+
+## Applying a new design
+
+1. Update **Design brief** above with the intended direction, both-theme color pairs, typography, responsive layout, and interaction states. Keep this edit map accurate as ownership changes.
+2. Change semantic tokens, font stack, radius, focus, and reduced-motion treatment in `src/index.css` first. Preserve the pure-black dark canvas, neutral dark surfaces, monochrome actions, and resolved native `color-scheme`.
+3. Apply the brief to existing `src/components/ui/` primitives, including hover, focus, disabled, invalid, and destructive states. Reuse semantic classes rather than scattering palette literals.
+4. Update shared layouts and controls, then route and form compositions in the edit map. Preserve implemented navigation and clearly labeled demo behavior.
+5. Preserve the theme invariant: a fresh install follows OS appearance, including live OS changes; the only visible control directly switches light/dark. Both settings and header reuse `ThemeToggle` and `toggleTheme`. An explicit choice persists and overrides OS appearance; never expose a third System choice.
+6. Run the repository's local gates, without treating code inspection as successful verification:
+
+   ```bash
+   bun run format:check
+   bun run lint:strict
+   bun run check
+   bun run doctor
+   bun run build
+   ```
+
+   `check` runs typecheck, lint, Vitest, convention checks, and dependency checks. `bun run gauntlet` is the existing combined formatting/lint/type/test/convention/dependency gate; it does not include Doctor or build. Preserve Oxlint/Oxfmt scripts, dependencies, editor settings, generated-file exclusions, and scoped Doctor exceptions.
+
+7. Start the actual app with `bun run dev` (port 3000). Inspect `/`, `/settings` (Appearance), dashboard/task compositions, and auth forms at narrow and wide widths in both appearances. Check real computed body background, native controls, action contrast, focus, overflow, and reduced motion. Exercise the controls with keyboard and pointer; do not rely only on screenshots.
+8. In a clean browser context, test both OS preferences and live OS changes before clicking. Then switch, reload, and change OS appearance again: the explicit choice must remain. Header and settings labels must agree; no System option should exist. Record checks actually performed and any failures.
+
+Browser inspection needs no login for the public landing or settings page. Settings appearance is revealed with `#settings-appearance-button`; the shared button is named “Switch to dark mode” or “Switch to light mode” according to resolved appearance. The preference is stored in localStorage `theme` and persisted Zustand `app-store`; use a clean context or clear both for initial-default checks. Real authentication checks require a configured working backend and valid credentials, not invented tokens.
 
 ## Quality tools
 

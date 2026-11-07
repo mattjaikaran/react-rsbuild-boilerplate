@@ -1,4 +1,6 @@
+import type { AxiosStatic } from 'axios'
 import axios from 'axios'
+import { client } from '@/api/generated/client.gen'
 import { env } from '@/config/env'
 import { useStore } from '@/lib/store'
 
@@ -28,3 +30,10 @@ apiClient.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+// The generated SDK calls this axios instance, so every generated request keeps
+// the token and session-expiry interceptors configured above.
+client.setConfig({
+  axios: apiClient as AxiosStatic,
+  baseURL: env.apiUrl,
+})

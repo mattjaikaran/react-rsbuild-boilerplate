@@ -12,6 +12,8 @@
     "lint:fix": "oxlint . --fix",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
+    "api:generate": "bun run scripts/api-generate.ts",
+    "api:check": "bun run scripts/api-check.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -22,7 +24,7 @@
     "check": "bun run typecheck && bun run lint && bun run test && bun run check-conventions && bun run check-dependencies",
     "check-conventions": "bun run scripts/check_conventions.ts",
     "check-dependencies": "bun run scripts/check_dependencies.ts",
-    "gauntlet": "bun run format:check && bun run lint && bun run typecheck && bun run test && bun run check-conventions && bun run check-dependencies",
+    "gauntlet": "bun run api:check && bun run format:check && bun run lint && bun run typecheck && bun run test && bun run check-conventions && bun run check-dependencies",
     "prepare": "echo 'ready'",
     "doctor": "react-doctor . --yes --no-telemetry --no-supply-chain --blocking error"
   },
@@ -47,6 +49,8 @@
     "zustand": "5.0.13"
   },
   "devDependencies": {
+    "@hey-api/client-axios": "0.9.1",
+    "@hey-api/openapi-ts": "0.99.0",
     "@rsbuild/core": "2.0.3",
     "@rsbuild/plugin-react": "2.0.0",
     "@tailwindcss/postcss": "4.2.4",

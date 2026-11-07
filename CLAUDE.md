@@ -10,6 +10,8 @@ bun run test         # Vitest
 bun run lint:fix     # Oxlint auto-fix
 bun run lint:strict  # Oxlint, warnings fail
 bun run format       # Oxfmt
+bun run api:generate # Regenerate src/api/generated from the OpenAPI contract
+bun run api:check    # Fail when generated output is stale
 bun run doctor       # Pinned React Doctor, errors block
 ```
 
@@ -25,7 +27,8 @@ bun run doctor       # Pinned React Doctor, errors block
 - **react-hook-form + zod** — forms in `src/forms/`
 - **Path alias** — `@/` → `src/`
 - **Env vars** — `PUBLIC_` prefix (not VITE_), via `src/config/env.ts`
-- **API client** — `src/api/client.ts` (axios + JWT interceptors)
+- **API client** — `src/api/client.ts` (axios + JWT interceptors), generated SDK in `src/api/generated/`
+- **OpenAPI** — `openapi-ts.config.ts` reads `backend/docs/openapi/openapi.json` (or `OPENAPI_SPEC_PATH`); commit regenerated output
 - **Mock API** — `src/mock-api/index.ts` for development
 - **Tests** — co-located `*.test.tsx`, utils at `src/test/utils.tsx`
 
@@ -33,7 +36,7 @@ bun run doctor       # Pinned React Doctor, errors block
 
 ```
 src/
-├── api/              # API service functions (auth, todos)
+├── api/              # Axios instance and generated SDK service modules
 ├── components/
 │   ├── layouts/      # MainLayout, AuthLayout, DashboardLayout
 │   ├── nav/          # Navbar, Footer

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 import { routeTree } from './routeTree.gen'
 import { initializeStore } from '@/lib/store'
+import '@/api/client'
 import './index.css'
 
 const queryClient = new QueryClient({

@@ -1,9 +1,23 @@
-import { apiClient } from '@/api/client'
+import '@/api/client'
+import {
+  todosArchiveCompleted,
+  todosBulkDelete,
+  todosBulkUpdate,
+  todosCreate,
+  todosDelete,
+  todosGet,
+  todosList,
+  todosStats,
+  todosToggle,
+  todosUpdate,
+} from '@/api/generated/sdk.gen'
+import type { TodosListData } from '@/api/generated/types.gen'
 import type {
   CreateTodoRequest,
   PaginatedResponse,
   QueryParams,
   Todo,
+  TodoPriority,
   UpdateTodoRequest,
 } from '@/types'
 
@@ -18,34 +32,52 @@ export const todoQueryKeys = {
   byStatus: (completed: boolean) => [...todoQueryKeys.all, 'status', completed] as const,
 }
 
+type TodoListParams = QueryParams & {
+  priority?: TodoPriority
+  completed?: boolean
+  overdue?: boolean
+  due_today?: boolean
+}
+
+const toListQuery = (params?: TodoListParams): NonNullable<TodosListData['query']> => ({
+  page: params?.page,
+  page_size: params?.page_size,
+  search: params?.search,
+  ordering: params?.ordering,
+  priority: params?.priority,
+  completed: params?.completed,
+  overdue: params?.overdue,
+  due_today: params?.due_today,
+})
+
 export const todosApi = {
-  getTodos: async (params?: QueryParams): Promise<PaginatedResponse<Todo>> => {
-    const { data } = await apiClient.get('/todos', { params })
+  getTodos: async (params?: TodoListParams): Promise<PaginatedResponse<Todo>> => {
+    const { data } = await todosList({ query: toListQuery(params), throwOnError: true })
     return data
   },
 
   getTodo: async (id: string): Promise<Todo> => {
-    const { data } = await apiClient.get(`/todos/${id}`)
+    const { data } = await todosGet({ path: { id }, throwOnError: true })
     return data
   },
 
   createTodo: async (todo: CreateTodoRequest): Promise<Todo> => {
-    const { data } = await apiClient.post('/todos', todo)
+    const { data } = await todosCreate({ body: todo, throwOnError: true })
     return data
   },
 
   updateTodo: async (id: string, updates: UpdateTodoRequest): Promise<Todo> => {
-    const { data } = await apiClient.patch(`/todos/${id}`, updates)
+    const { data } = await todosUpdate({ path: { id }, body: updates, throwOnError: true })
     return data
   },
 
   deleteTodo: async (id: string): Promise<{ message: string }> => {
-    const { data } = await apiClient.delete(`/todos/${id}`)
+    const { data } = await todosDelete({ path: { id }, throwOnError: true })
     return data
   },
 
   toggleTodo: async (id: string): Promise<Todo> => {
-    const { data } = await apiClient.post(`/todos/${id}/toggle`)
+    const { data } = await todosToggle({ path: { id }, throwOnError: true })
     return data
   },
 
@@ -56,63 +88,62 @@ export const todosApi = {
     overdue: number
     byPriority: Record<string, number>
   }> => {
-    const { data } = await apiClient.get('/todos/stats')
+    const { data } = await todosStats({ throwOnError: true })
     return data
   },
 
   getByPriority: async (
-    priority: string,
+    priority: TodoPriority,
     params?: Omit<QueryParams, 'filters'>,
   ): Promise<Todo[]> => {
-    const { data } = await apiClient.get('/todos', {
-      params: { ...params, priority },
+    const { data } = await todosList({
+      query: toListQuery({ ...params, priority }),
+      throwOnError: true,
     })
-    return data
+    return data.data
   },
 
   getByStatus: async (
     completed: boolean,
     params?: Omit<QueryParams, 'filters'>,
   ): Promise<Todo[]> => {
-    const { data } = await apiClient.get('/todos', {
-      params: { ...params, completed },
+    const { data } = await todosList({
+      query: toListQuery({ ...params, completed }),
+      throwOnError: true,
     })
-    return data
+    return data.data
   },
 
   getOverdue: async (): Promise<Todo[]> => {
-    const { data } = await apiClient.get('/todos', {
-      params: { overdue: true },
-    })
-    return data
+    const { data } = await todosList({ query: { overdue: true }, throwOnError: true })
+    return data.data
   },
 
   getDueToday: async (): Promise<Todo[]> => {
-    const { data } = await apiClient.get('/todos', {
-      params: { due_today: true },
-    })
-    return data
+    const { data } = await todosList({ query: { due_today: true }, throwOnError: true })
+    return data.data
   },
 
-  search: async (query: string, params?: QueryParams): Promise<Todo[]> => {
-    const { data } = await apiClient.get('/todos', {
-      params: { ...params, search: query },
+  search: async (query: string, params?: Omit<QueryParams, 'filters'>): Promise<Todo[]> => {
+    const { data } = await todosList({
+      query: toListQuery({ ...params, search: query }),
+      throwOnError: true,
     })
-    return data
+    return data.data
   },
 
   bulkUpdate: async (ids: string[], updates: UpdateTodoRequest): Promise<Todo[]> => {
-    const { data } = await apiClient.patch('/todos/bulk', { ids, ...updates })
+    const { data } = await todosBulkUpdate({ body: { ids, ...updates }, throwOnError: true })
     return data
   },
 
   bulkDelete: async (ids: string[]): Promise<{ deletedCount: number }> => {
-    const { data } = await apiClient.post('/todos/bulk-delete', { ids })
+    const { data } = await todosBulkDelete({ body: { ids }, throwOnError: true })
     return data
   },
 
   archiveCompleted: async (): Promise<{ message: string; archivedCount: number }> => {
-    const { data } = await apiClient.post('/todos/archive-completed')
+    const { data } = await todosArchiveCompleted({ throwOnError: true })
     return data
   },
 }

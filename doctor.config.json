@@ -2,6 +2,10 @@
   "ignore": {
     "overrides": [
       {
+        "files": ["src/api/generated/**/*"],
+        "rules": ["react-doctor/async-await-in-loop"]
+      },
+      {
         "files": ["src/routes/**/*.tsx"],
         "rules": ["react-doctor/only-export-components"]
       },

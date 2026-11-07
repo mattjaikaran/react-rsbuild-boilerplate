@@ -5,6 +5,8 @@ listed here. Add a row when you add a dependency.
 
 | Package                       | Version  |
 | ----------------------------- | -------- |
+| @hey-api/client-axios         | 0.9.1    |
+| @hey-api/openapi-ts           | 0.99.0   |
 | @hookform/resolvers           | 5.2.2    |
 | @radix-ui/react-dropdown-menu | 2.1.14   |
 | @radix-ui/react-label         | 2.1.6    |

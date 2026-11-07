@@ -45,6 +45,8 @@ bun run preview
 | `bun run lint:fix`      | Run Oxlint with auto-fix                                                          |
 | `bun run format`        | Format the repository with Oxfmt                                                  |
 | `bun run format:check`  | Check repository formatting                                                       |
+| `bun run api:generate`  | Regenerate `src/api/generated` from the OpenAPI contract                          |
+| `bun run api:check`     | Fail when committed generated output is stale                                     |
 | `bun run doctor`        | Run pinned React Doctor; errors block, telemetry and supply-chain checks disabled |
 | `bun run typecheck`     | TypeScript type checking                                                          |
 | `bun run test`          | Run tests                                                                         |
@@ -69,8 +71,11 @@ make hook name=use-example       # scaffold a hook
 ## Project Structure
 
 ```
+backend/docs/openapi/openapi.json  # Vendored paired-backend contract
+openapi-ts.config.ts               # hey-api generator configuration
 src/
-├── api/            # API client and service functions
+├── api/            # Axios instance and generated service functions
+│   └── generated/  # Committed hey-api output (do not edit by hand)
 ├── components/
 │   ├── layouts/    # Page layouts (MainLayout)
 │   ├── shared/     # Shared components (ThemeToggle)
@@ -108,6 +113,15 @@ This boilerplate includes Button, Card, and Input. To add more, copy from [shadc
 ## Environment Variables
 
 Copy `.env.example` to `.env` and update values. Rsbuild uses `PUBLIC_` prefix for client-side env vars.
+
+## API Client Generation
+
+`@hey-api/openapi-ts` generates `src/api/generated` from `backend/docs/openapi/openapi.json`. The generated client uses `@hey-api/client-axios` and reuses the Axios instance in `src/api/client.ts`, so requests keep the JWT and session-expiry interceptors. TanStack Query options and Zod schemas are generated alongside the typed SDK.
+
+- `bun run api:generate` rewrites the committed output. Run it after changing the contract.
+- `bun run api:check` regenerates into a temporary directory and fails on any missing, extra, or changed file. The gauntlet runs it, so stale output cannot land.
+- `OPENAPI_SPEC_PATH=../backend/docs/openapi/openapi.json bun run api:generate` targets a backend contract in a mattstack monorepo. Without it, the vendored fixture is used, so the app builds before a backend exists.
+- `src/api/auth.ts` and `src/api/todos.ts` call the generated SDK. Do not edit `src/api/generated` by hand.
 
 ## Design and Quality Tooling
 

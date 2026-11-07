@@ -38,6 +38,7 @@ const EXCLUDE_DIRS = new Set([
   '.vscode',
   'src/optional',
   'src/components/ui',
+  'src/api/generated',
 ])
 
 const SOURCE_EXTS = new Set(['.ts', '.tsx'])

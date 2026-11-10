@@ -1,4 +1,4 @@
-.PHONY: help dev build preview clean clean-dist install lint lint-strict lint-fix format format-check doctor typecheck test test-watch test-ui test-coverage check check-conventions check-dependencies gauntlet docker-build docker-up docker-down docker-logs component route hook
+.PHONY: help dev build preview clean clean-dist install lint lint-strict lint-fix format format-check doctor typecheck test test-watch test-ui test-coverage check check-conventions check-dependencies check-agents gauntlet docker-build docker-up docker-down docker-logs component route hook
 
 help: ## show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -64,6 +64,9 @@ check-conventions: ## run convention checks
 
 check-dependencies: ## verify dependencies are documented
 	bun run check-dependencies
+
+check-agents: ## verify AGENTS.md links and skill frontmatter
+	bun run check:agents
 
 gauntlet: ## run all quality gates
 	bun run gauntlet

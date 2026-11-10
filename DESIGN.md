@@ -1,6 +1,6 @@
 # Design Guide
 
-This is the authoritative repository-local guide for visual changes. Update the brief here before changing implementation; README and CLAUDE defer to this guide.
+This is the authoritative repository-local guide for visual changes. Update the brief here before changing implementation; README and AGENTS.md defer to this guide.
 
 ## Design brief
 

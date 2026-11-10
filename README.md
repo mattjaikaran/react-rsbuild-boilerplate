@@ -54,6 +54,7 @@ bun run preview
 | `bun run test:ui`       | Vitest UI                                                                         |
 | `bun run test:coverage` | Tests with coverage report                                                        |
 | `bun run check`         | Run typecheck + lint + test                                                       |
+| `bun run check:agents`  | Check AGENTS.md, its relative links, CLAUDE.md import, and skill frontmatter      |
 | `bun run clean`         | Remove dist and node_modules                                                      |
 
 ## Makefile

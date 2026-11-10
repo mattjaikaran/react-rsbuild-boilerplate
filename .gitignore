@@ -17,6 +17,9 @@ dist/
 *.swo
 .DS_Store
 
+# agent personal overrides
+*.local.*
+
 # test
 coverage/
 

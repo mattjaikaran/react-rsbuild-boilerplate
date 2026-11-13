@@ -37,7 +37,7 @@ Run from the repository root with Bun 1.3+ and Node `^20.19.0 || >=22.13.0` (see
 | Static gate              | `bun run check`              |
 | Full gate                | `bun run gauntlet`           |
 
-`bun run check` runs typecheck, lint, tests, convention checks, and dependency checks. `bun run gauntlet` adds the API drift and formatting checks. `make help` lists Makefile wrappers for the same tasks. `bun run dev` and `bun run preview` stay running until stopped; every other command exits non-zero on failure. CI runs `check:agents` and `api:check`; run the rest locally.
+`bun run check` runs typecheck, lint, tests, convention checks, and dependency checks. `bun run gauntlet` adds the API drift and formatting checks. `make help` lists Makefile wrappers for the same tasks. `bun run dev` and `bun run preview` stay running until stopped; every other command exits non-zero on failure. CI runs Oxlint, the Oxfmt check, typecheck, unit tests, the build, and React Doctor on code changes, and always runs `check:agents` and `api:check`; docs-only pull requests skip the code jobs. Run the rest locally.
 
 ## Architecture and code standards
 

@@ -16,6 +16,7 @@
     "api:check": "bun run scripts/api-check.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:e2e": "playwright test --pass-with-no-tests",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
@@ -52,6 +53,7 @@
   "devDependencies": {
     "@hey-api/client-axios": "0.9.1",
     "@hey-api/openapi-ts": "0.99.0",
+    "@playwright/test": "1.65.0",
     "@rsbuild/core": "2.0.3",
     "@rsbuild/plugin-react": "2.0.0",
     "@tailwindcss/postcss": "4.2.4",

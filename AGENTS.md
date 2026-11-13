@@ -1,6 +1,9 @@
 # AGENTS.md
 
-Single source of agent instructions for this repository. Codex, opencode, Cursor, and Claude Code (through the `CLAUDE.md` import) read this file; the nearest `AGENTS.md` wins in nested directories. Keep durable facts here or in `docs/`, and procedures in `.claude/skills/`.
+Rules for this React frontend package only: package manager, commands, the
+generated API client, and the Playwright journey tests. A nested `AGENTS.md`
+wins over this one. This is the only agent instruction file; do not add a
+`CLAUDE.md` or another harness adapter.
 
 ## Project overview
 
@@ -11,9 +14,11 @@ React 19 single-page app built with Rsbuild (Rspack/SWC), TypeScript, and Tailwi
 - [DEPENDENCIES.md](DEPENDENCIES.md) — every dependency with its pinned version.
 - [docs/architecture.md](docs/architecture.md) — directory map, module ownership, code standards, and patterns.
 
+Package manager: **Bun** 1.3+ (`bun.lock`) on Node `^20.19.0 || >=22.13.0`. No npm or yarn commands in docs.
+
 ## Commands
 
-Run from the repository root with Bun 1.3+ and Node `^20.19.0 || >=22.13.0` (see `package.json`).
+Run from the repository root with Bun.
 
 | Task                     | Command                      |
 | ------------------------ | ---------------------------- |
@@ -22,6 +27,7 @@ Run from the repository root with Bun 1.3+ and Node `^20.19.0 || >=22.13.0` (see
 | Production build         | `bun run build`              |
 | Preview the build        | `bun run preview`            |
 | Unit and component tests | `bun run test`               |
+| Journey e2e tests        | `bun run test:e2e`           |
 | Typecheck                | `bun run typecheck`          |
 | Lint                     | `bun run lint`               |
 | Lint, warnings fail      | `bun run lint:strict`        |
@@ -43,32 +49,48 @@ Run from the repository root with Bun 1.3+ and Node `^20.19.0 || >=22.13.0` (see
 
 Read [docs/architecture.md](docs/architecture.md) before changing `src/`. It is the source of truth for build and runtime wiring, directory ownership, the route, API service, query hook, mutation, and store-slice patterns, generated-file boundaries, and code standards. [DESIGN.md](DESIGN.md) is authoritative for anything visual.
 
-## Testing policy
+## Generated API client
+
+`src/api/generated/` is vendor code generated from `backend/docs/openapi/openapi.json` by `@hey-api/openapi-ts` ([openapi-ts.config.ts](openapi-ts.config.ts)). Never edit it by hand. Regenerate with `bun run api:generate` after a contract change and prove freshness with `bun run api:check`; both must pass before commit.
+
+## Testing
 
 Vitest and Testing Library run in jsdom with co-located `src/**/*.{test,spec}.{ts,tsx}` files and helpers in `src/test/`. `bun run test` runs the suite; `bun run check` and `bun run gauntlet` include it.
 
-For agent-run tasks, do not add or change unit tests. When a change needs permanent coverage, add or extend a Playwright e2e test or a backend smoke test under `tests/smoke` in the repository's style, and run it alongside the static gates. This repository has no Playwright or smoke harness yet; add one with the change when the behavior needs it, and document its command here. Report exactly which checks ran.
+For agent-run tasks, do not add or change unit tests. When a change needs permanent coverage, add or extend a Playwright journey test in `e2e/` and run `bun run test:e2e`.
 
-## Git and commits
+## Playwright journeys
 
-- Use Conventional Commits: `type(scope): Imperative summary`, subject at most 50 characters. Types in use: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `build`, `ci`.
-- Wrap the body at 72 columns and explain what changed and why.
-- Stage explicit paths, keep the worktree clean, and never commit build output or stale generated files.
-- Do not push, force-push, or create, edit, or mark pull requests ready. agent-run pushes the branch and opens the pull request after its quality gate.
+Journey tests live in `e2e/` and follow one convention, so the backend JOURNEYS
+gate can map step results:
 
-## Specs and agent-run
+- Write **one test per journey**, tagged `@J-NNN` with the Playwright `tag`
+  option. Do not write one test per step.
+- Wrap each journey step in `test.step('J-NNN-S<n>: ...')`; the step number must
+  match the journey spec.
+- [playwright.config.ts](playwright.config.ts) runs the `list` and `json`
+  reporters, and the JSON report at `test-results/journeys.json` is what the
+  gate reads. Keep the reporter block and that path.
 
-Agent-run tasks start from a spec in `tasks/specs/`. The format, the `Files owned` boundary, verification commands, and gate behavior are documented in [tasks/specs/README.md](tasks/specs/README.md).
+```ts
+test('visitor signs up and signs in', { tag: '@J-001' }, async ({ page }) => {
+  await test.step('J-001-S1: create an account', async () => {
+    /* ... */
+  })
+  await test.step('J-001-S2: sign in', async () => {
+    /* ... */
+  })
+})
+```
 
-## Security
+`bun run test:e2e` starts the dev server itself and passes when no journey tests
+exist yet; add the first spec with the journey it verifies.
 
-- Client environment variables use the `PUBLIC_` prefix and are public. Keep secrets, tokens, and private endpoints out of `PUBLIC_*`, source, tests, and fixtures. `.env*` is gitignored; `.env.example` documents the required keys.
-- Use exact dependency versions: no `^` or `~`. Add with `bun add pkg@x.y.z`, upgrade with `bun add pkg@latest`, and document every package in [DEPENDENCIES.md](DEPENDENCIES.md); `bun run check-dependencies` enforces it.
-- Treat `src/api/generated/` as vendor code. Regenerate it with `bun run api:generate` after contract changes and prove freshness with `bun run api:check`.
-- Access tokens persist in versioned localStorage keys by design. The tradeoff and its production path are documented in [DESIGN.md](DESIGN.md). Never suppress React Doctor findings globally; add only scoped entries to `doctor.config.json`.
+## Dependencies
 
-## Skills and personal files
-
-Skills live in `.claude/skills/<name>/SKILL.md` with `name` and `description` frontmatter so only metadata loads until the skill is used. Use skills for procedures and keep facts here or in `docs/`. The tracked `react-doctor` skill is symlinked from its pinned package.
-
-Personal overrides (`*.local.*`, including `.claude/settings.local.json`) are gitignored. Commit `.mcp.json`, `.claude/settings.json`, or `.claude/agents/` only when the repository needs them.
+Use exact versions: no `^` or `~`. Add with `bun add pkg@x.y.z`, upgrade with
+`bun add pkg@latest`, and document every package in
+[DEPENDENCIES.md](DEPENDENCIES.md); `bun run check-dependencies` enforces it.
+Access tokens persist in versioned localStorage keys by design; the tradeoff and
+its production path are documented in [DESIGN.md](DESIGN.md). Never suppress
+React Doctor findings globally; add only scoped entries to `doctor.config.json`.

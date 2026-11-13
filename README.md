@@ -50,11 +50,12 @@ bun run preview
 | `bun run doctor`        | Run pinned React Doctor; errors block, telemetry and supply-chain checks disabled |
 | `bun run typecheck`     | TypeScript type checking                                                          |
 | `bun run test`          | Run tests                                                                         |
+| `bun run test:e2e`      | Run Playwright journey tests and write `test-results/journeys.json`               |
 | `bun run test:watch`    | Run tests in watch mode                                                           |
 | `bun run test:ui`       | Vitest UI                                                                         |
 | `bun run test:coverage` | Tests with coverage report                                                        |
 | `bun run check`         | Run typecheck + lint + test                                                       |
-| `bun run check:agents`  | Check AGENTS.md, its relative links, CLAUDE.md import, and skill frontmatter      |
+| `bun run check:agents`  | Check AGENTS.md, its relative links, and skill frontmatter                        |
 | `bun run clean`         | Remove dist and node_modules                                                      |
 
 ## Makefile
